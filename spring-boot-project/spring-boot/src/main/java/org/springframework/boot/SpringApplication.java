@@ -252,10 +252,15 @@ public class SpringApplication {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+		//设置资源加载器，开始启动容器为null
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
+		//primarySources可变参数只有一个，且为springboot启动主类class对象
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+		//WebApplicationType.SERVLET
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		//将ApplicationContextInitializer类的实现类的实例名称从spring.factories文件中获取，之后将对象存放至initializers集合中
+		//真正获取对象实例化对象的方法为：getSpringFactoriesInstances#createSpringFactoriesInstances()
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
@@ -405,14 +410,26 @@ public class SpringApplication {
 				SpringApplicationRunListener.class, types, this, args));
 	}
 
+	/**
+	 * 加载项目下所有的META-INF/spring.factories文件，将文件内容解析为Map<String, List<String>>数据格式，
+	 * 之后根据指定type获取List<String> 其中String为类全路径
+	 * 之后调用createSpringFactoriesInstances方法，通过指定Classloader获取类Constructor 实例化、初始化对象
+	 * @param type Class
+	 * @param <T>
+	 * @return T
+	 */
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type) {
 		return getSpringFactoriesInstances(type, new Class<?>[] {});
 	}
 
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type,
 			Class<?>[] parameterTypes, Object... args) {
+		//获取jdk ClassLoader AppClassLoader
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		// Use names and ensure unique to protect against duplicates
+		/**
+		 * loadFactoryNames
+		 */
 		Set<String> names = new LinkedHashSet<>(
 				SpringFactoriesLoader.loadFactoryNames(type, classLoader));
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes,
