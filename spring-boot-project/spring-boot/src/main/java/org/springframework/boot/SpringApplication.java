@@ -261,8 +261,11 @@ public class SpringApplication {
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
 		//将ApplicationContextInitializer类的实现类的实例名称从spring.factories文件中获取，之后将对象存放至initializers集合中
 		//真正获取对象实例化对象的方法为：getSpringFactoriesInstances#createSpringFactoriesInstances()
+		//实际调用的jdk Constructor.newInstance来创建对象实例
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
+		//同上，此处获取的是ApplicationListener的所有实现
+		//需要注意ApplicationListener接口是一个@FunctionalInterface
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
@@ -428,16 +431,25 @@ public class SpringApplication {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		// Use names and ensure unique to protect against duplicates
 		/**
-		 * loadFactoryNames
+		 * loadFactoryNames从spring.factories中获取所有指定type的类名全路径
 		 */
 		Set<String> names = new LinkedHashSet<>(
 				SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+		/**
+		 * 具体使用Constructor.newInstance创建对象实例
+		 */
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes,
 				classLoader, args, names);
+		/**
+		 * 根据type实现类中order属性排序，最小最前，为空或者无此属性最后
+		 */
 		AnnotationAwareOrderComparator.sort(instances);
 		return instances;
 	}
 
+	/**
+	 * 根据反射获取对象实例，最终使用的是Constructor.newInstance创建实例
+	 */
 	@SuppressWarnings("unchecked")
 	private <T> List<T> createSpringFactoriesInstances(Class<T> type,
 			Class<?>[] parameterTypes, ClassLoader classLoader, Object[] args,
