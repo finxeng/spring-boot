@@ -265,8 +265,9 @@ public class SpringApplication {
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
 		//同上，此处获取的是ApplicationListener的所有实现
-		//需要注意ApplicationListener接口是一个@FunctionalInterface
+		//需要注意ApplicationListener接口是一个@FunctionalInterface see PersonalFunctionalInterface.java
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+		//获取启动主类的class对象 使用的是Class.forName("***")
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
