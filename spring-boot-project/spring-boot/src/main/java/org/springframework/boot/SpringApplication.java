@@ -293,11 +293,19 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
+		//创建任务计时器
 		StopWatch stopWatch = new StopWatch();
+		//启动任务计时器
 		stopWatch.start();
+		//继承自ApplicationContext，对应用上下文进行自定义操作
 		ConfigurableApplicationContext context = null;
+		//异常接收报告器，用于接收且报告自定义异常
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
+		//设置java.awt.headless=true that is all
 		configureHeadlessProperty();
+		//SpringApplicationRunListeners为SpringApplicationRunListener自定义集合，
+		// 提供操作SpringApplicationRunListener启动、停止集合方法
+		//从spring.factories文件中获取SpringApplicationRunListener.class的所有类全路径名，通过类名称全路径获取类class对象
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
