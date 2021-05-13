@@ -304,7 +304,7 @@ public class SpringApplication {
 		//设置java.awt.headless=true that is all
 		configureHeadlessProperty();
 		//SpringApplicationRunListeners为SpringApplicationRunListener自定义集合，
-		// 提供操作SpringApplicationRunListener启动、停止集合方法
+		//提供操作SpringApplicationRunListener启动、停止集合方法
 		//从spring.factories文件中获取SpringApplicationRunListener.class的所有类全路径名，通过类名称全路径获取类class对象
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
