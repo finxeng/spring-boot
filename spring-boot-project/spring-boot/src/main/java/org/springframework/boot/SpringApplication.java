@@ -305,7 +305,10 @@ public class SpringApplication {
 		configureHeadlessProperty();
 		//SpringApplicationRunListeners为SpringApplicationRunListener自定义集合，
 		//提供操作SpringApplicationRunListener启动、停止集合方法
-		//从spring.factories文件中获取SpringApplicationRunListener.class的所有类全路径名，通过类名称全路径获取类class对象
+		/**
+		 * 从spring.factories文件中获取SpringApplicationRunListener.class的所有实现类全路径名(EventPublishingRunListener)，
+		 * 通过实现类的名称全路径获取实现类class对象、实例，通过实现类实例创建SpringApplicationRunListeners对象，赋值至SpringApplicationRunListeners对象的listeners集合属性中
+		 */
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
