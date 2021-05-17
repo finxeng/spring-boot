@@ -310,6 +310,7 @@ public class SpringApplication {
 		 * 通过实现类的名称全路径获取实现类class对象、实例，通过实现类实例创建SpringApplicationRunListeners对象，赋值至SpringApplicationRunListeners对象的listeners集合属性中
 		 */
 		SpringApplicationRunListeners listeners = getRunListeners(args);
+		//发布ApplicationStartingEvent 事件
 		listeners.starting();
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(
@@ -317,8 +318,11 @@ public class SpringApplication {
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
 			configureIgnoreBeanInfo(environment);
+			//控制台打印banner
 			Banner printedBanner = printBanner(environment);
+			//通过反射构建AnnotationConfigServletWebServerApplicationContext对象实例，注意此处构建的时候调用的是其无参构造器
 			context = createApplicationContext();
+			//获取异常收集器，用于收集启动过程中异常信息
 			exceptionReporters = getSpringFactoriesInstances(
 					SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
@@ -326,11 +330,13 @@ public class SpringApplication {
 					printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
+			//计时器停止
 			stopWatch.stop();
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass)
 						.logStarted(getApplicationLog(), stopWatch);
 			}
+			//发布ApplicationStartedEvent事件
 			listeners.started(context);
 			callRunners(context, applicationArguments);
 		}
@@ -340,6 +346,7 @@ public class SpringApplication {
 		}
 
 		try {
+			//发布ApplicationReadyEvent事件
 			listeners.running(context);
 		}
 		catch (Throwable ex) {
@@ -355,6 +362,7 @@ public class SpringApplication {
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
+		//发布ApplicationEnvironmentPreparedEvent 事件
 		listeners.environmentPrepared(environment);
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
