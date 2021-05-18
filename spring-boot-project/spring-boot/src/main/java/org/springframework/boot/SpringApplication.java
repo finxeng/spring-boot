@@ -307,7 +307,8 @@ public class SpringApplication {
 		//提供操作SpringApplicationRunListener启动、停止集合方法
 		/**
 		 * 从spring.factories文件中获取SpringApplicationRunListener.class的所有实现类全路径名(EventPublishingRunListener)，
-		 * 通过实现类的名称全路径获取实现类class对象、实例，通过实现类实例创建SpringApplicationRunListeners对象，赋值至SpringApplicationRunListeners对象的listeners集合属性中
+		 * 通过实现类的名称全路径获取实现类class对象、实例，通过实现类实例创建SpringApplicationRunListeners对象，
+		 * 赋值至SpringApplicationRunListeners对象的listeners集合属性中
 		 */
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		//发布ApplicationStartingEvent 事件
@@ -326,6 +327,7 @@ public class SpringApplication {
 			exceptionReporters = getSpringFactoriesInstances(
 					SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
+			//准备应用程序上下文
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
 			refreshContext(context);
@@ -389,7 +391,9 @@ public class SpringApplication {
 			ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
+		//调用所有ApplicationContextInitializer实现类的initialize方法
 		applyInitializers(context);
+		//发布ApplicationPreparedEvent事件
 		listeners.contextPrepared(context);
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
@@ -397,6 +401,7 @@ public class SpringApplication {
 		}
 
 		// Add boot specific singleton beans
+		//注册了两个单例bean 一个是启动参数的实体，一个是banner对象
 		context.getBeanFactory().registerSingleton("springApplicationArguments",
 				applicationArguments);
 		if (printedBanner != null) {
@@ -406,7 +411,9 @@ public class SpringApplication {
 		// Load the sources
 		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
+		//注册主类，以及创建BeanDefinitionLoader
 		load(context, sources.toArray(new Object[0]));
+		//发布ApplicationPreparedEvent事件
 		listeners.contextLoaded(context);
 	}
 
@@ -731,6 +738,7 @@ public class SpringApplication {
 			logger.debug(
 					"Loading source " + StringUtils.arrayToCommaDelimitedString(sources));
 		}
+		//获取BeanDefinitionRegistry，之后创建BeanDefinitionLoader
 		BeanDefinitionLoader loader = createBeanDefinitionLoader(
 				getBeanDefinitionRegistry(context), sources);
 		if (this.beanNameGenerator != null) {
