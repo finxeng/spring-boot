@@ -316,6 +316,7 @@ public class SpringApplication {
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(
 					args);
+			// 创建Environment,且进行Environment属性绑定。
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
 			configureIgnoreBeanInfo(environment);
@@ -330,6 +331,7 @@ public class SpringApplication {
 			//准备应用程序上下文
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
+			//开始实例、初始化bean
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			//计时器停止
@@ -340,6 +342,7 @@ public class SpringApplication {
 			}
 			//发布ApplicationStartedEvent事件
 			listeners.started(context);
+			//调用所有实现了ApplicationRunner接口的实现类的run的方法
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
@@ -362,6 +365,7 @@ public class SpringApplication {
 			SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments) {
 		// Create and configure the environment
+		// 创建StandardServletEnvironment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		//发布ApplicationEnvironmentPreparedEvent 事件
@@ -389,7 +393,9 @@ public class SpringApplication {
 	private void prepareContext(ConfigurableApplicationContext context,
 			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments, Banner printedBanner) {
+		//设置应用上下文的环境变量
 		context.setEnvironment(environment);
+		//主要设置了resourceLoader
 		postProcessApplicationContext(context);
 		//调用所有ApplicationContextInitializer实现类的initialize方法
 		applyInitializers(context);
