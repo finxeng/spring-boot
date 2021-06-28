@@ -165,6 +165,10 @@ public class ConfigFileApplicationListener
 		return true;
 	}
 
+	/**
+	 * 只处理
+	 * @param event
+	 */
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationEnvironmentPreparedEvent) {

@@ -317,6 +317,7 @@ public class SpringApplication {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(
 					args);
 			// 创建Environment,且进行Environment属性绑定。
+			// 且发布ApplicationEnvironmentPreparedEvent事件
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
 			configureIgnoreBeanInfo(environment);
@@ -417,7 +418,7 @@ public class SpringApplication {
 		// Load the sources
 		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
-		//注册主类，以及创建BeanDefinitionLoader
+		//注册主类，以及创建BeanDefinitionLoader(BeanDefinitionLoader实际就是对BeanDefinition的包装)
 		load(context, sources.toArray(new Object[0]));
 		//发布ApplicationPreparedEvent事件
 		listeners.contextLoaded(context);
@@ -756,6 +757,7 @@ public class SpringApplication {
 		if (this.environment != null) {
 			loader.setEnvironment(this.environment);
 		}
+		//扫描bean
 		loader.load();
 	}
 
