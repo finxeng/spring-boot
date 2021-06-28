@@ -506,10 +506,20 @@ public class SpringApplication {
 		return instances;
 	}
 
+	/**
+	 * 在没指定调用子父类构造方法的前提下(显示super调用)，子类构造方法会优先调用父类无参构造方法，且具有传递效果
+	 * StandardServletEnvironment extend StandardEnvironment
+	 * StandardEnvironment extend AbstractEnvironment
+	 * AbstractEnvironment无参构造器初始化 propertySources、propertyResolver 且调用了StandardServletEnvironment子类实现的customizePropertySources()方法为propertySources赋值
+	 * StandardServletEnvironment类之后再次使用super调用直接父类StandardEnvironment的customizePropertySources方法继续为propertySources赋值
+	 *
+	 * @return
+	 */
 	private ConfigurableEnvironment getOrCreateEnvironment() {
 		if (this.environment != null) {
 			return this.environment;
 		}
+
 		switch (this.webApplicationType) {
 		case SERVLET:
 			return new StandardServletEnvironment();
