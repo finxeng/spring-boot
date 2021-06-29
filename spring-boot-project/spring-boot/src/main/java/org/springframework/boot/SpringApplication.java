@@ -316,8 +316,10 @@ public class SpringApplication {
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(
 					args);
-			// 创建Environment,且进行Environment属性绑定。
-			// 且发布ApplicationEnvironmentPreparedEvent事件
+			/**
+			 * 创建Environment,且进行Environment属性绑定。
+			 * 且发布ApplicationEnvironmentPreparedEvent事件
+			 */
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
 			configureIgnoreBeanInfo(environment);
@@ -369,7 +371,10 @@ public class SpringApplication {
 		// 创建StandardServletEnvironment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
-		//发布ApplicationEnvironmentPreparedEvent 事件
+		/**
+		 * 发布ApplicationEnvironmentPreparedEvent 事件
+		 * 事件监听方为ApplicationListener的实现方，具体为：spring.factories文件中ApplicationListener节点
+		 */
 		listeners.environmentPrepared(environment);
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {

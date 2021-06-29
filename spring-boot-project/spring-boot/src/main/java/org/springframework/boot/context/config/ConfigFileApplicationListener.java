@@ -182,7 +182,14 @@ public class ConfigFileApplicationListener
 
 	private void onApplicationEnvironmentPreparedEvent(
 			ApplicationEnvironmentPreparedEvent event) {
+		/**
+		 * 从spring.factories获取EnvironmentPostProcessor节点EnvironmentPostProcessor的实现
+		 * 		CloudFoundryVcapEnvironmentPostProcessor
+		 * 		SpringApplicationJsonEnvironmentPostProcessor
+		 * 		SystemEnvironmentPropertySourceEnvironmentPostProcessor
+		 */
 		List<EnvironmentPostProcessor> postProcessors = loadPostProcessors();
+		//除了以上三个EnvironmentPostProcessor之外捎带手把自己也干进去
 		postProcessors.add(this);
 		AnnotationAwareOrderComparator.sort(postProcessors);
 		for (EnvironmentPostProcessor postProcessor : postProcessors) {
@@ -215,6 +222,7 @@ public class ConfigFileApplicationListener
 	 */
 	protected void addPropertySources(ConfigurableEnvironment environment,
 			ResourceLoader resourceLoader) {
+		//添加一个随机数据源，配置文件可以通过${random.*}的方式获取不同类型随机值
 		RandomValuePropertySource.addToEnvironment(environment);
 		new Loader(environment, resourceLoader).load();
 	}
